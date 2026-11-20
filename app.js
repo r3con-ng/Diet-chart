@@ -197,9 +197,9 @@
           // Old saves held the "e.g. ..." sample text; start numbered notes instead
           state.instructionsText = /^\s*e\.g\./i.test(parsed.instructionsText) ? DEFAULT_NOTES_TEXT : parsed.instructionsText;
         }
-        // Before calorie mode v2, saved false values came from the old default
-        // (the checkbox looked enabled while application state was disabled).
-        if (parsed.calorieModeVersion >= 2 && typeof parsed.autoCalcCalories === 'boolean') {
+        // Earlier releases persisted manual mode as the default on some devices.
+        // Start those saved charts in auto mode; v3 settings retain future choices.
+        if (parsed.calorieModeVersion >= 3 && typeof parsed.autoCalcCalories === 'boolean') {
           state.autoCalcCalories = parsed.autoCalcCalories;
         }
         if (parsed.macroSplitMode === 'grams' || parsed.macroSplitMode === 'calories') {
@@ -219,7 +219,7 @@
         mealRows: state.mealRows,
         instructionsText: state.instructionsText,
         autoCalcCalories: state.autoCalcCalories,
-        calorieModeVersion: 2,
+        calorieModeVersion: 3,
         macroSplitMode: state.macroSplitMode
       }));
     } catch (e) {
@@ -295,6 +295,7 @@
       btnAddMealRow: document.getElementById('btnAddMealRow'),
       btnAddMealRowMobile: document.getElementById('btnAddMealRowMobile'),
       autoCalcToggle: document.getElementById('autoCalcToggle'),
+      calorieModeHint: document.getElementById('calorieModeHint'),
 
       // Totals
       totalProtein: document.getElementById('totalProteinVal'),
@@ -397,6 +398,11 @@
     if (els.chartDate) els.chartDate.value = state.client.date || 'DD/MM/YYYY';
     if (els.clientGoal) els.clientGoal.value = state.client.goal || 'e.g. Weight Loss / Muscle Gain';
     if (els.autoCalcToggle) els.autoCalcToggle.checked = state.autoCalcCalories;
+    if (els.calorieModeHint) {
+      els.calorieModeHint.textContent = state.autoCalcCalories
+        ? 'Auto-calc ON · calories update from macros. Turn off to edit calories manually.'
+        : 'Auto-calc OFF · edit each meal’s calories manually.';
+    }
   }
 
   function renderInstructions() {
@@ -611,15 +617,15 @@
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-          <label class="meal-calorie-field" style="display:flex; align-items:center; gap:6px; font-weight:800; font-family:var(--font-display); font-size:1.1rem; color:var(--royal-blue);">
-            Calories
+        <div class="meal-calories-row">
+          <label class="meal-calorie-field">
+            <span class="macro-mini-label">Calories (kcal)</span>
             <input type="number" min="0" step="1" inputmode="numeric" class="macro-mini-input meal-calorie-input"
-                   style="width:88px; font-weight:800; color:var(--royal-blue);" aria-label="Meal calories"
+                   aria-label="Meal calories"
                    value="${row.calories !== '' && row.calories !== undefined ? row.calories : ''}" data-field="calories" data-index="${index}"
                    ${state.autoCalcCalories ? 'readonly title="Auto-calculated from 4P + 4C + 9F"' : ''} />
           </label>
-          <div style="font-size:0.75rem; color:var(--text-muted);">
+          <div class="meal-row-index">
             Row ${index + 1} of ${state.mealRows.length}
           </div>
         </div>
@@ -1191,6 +1197,7 @@
     if (els.autoCalcToggle) {
       els.autoCalcToggle.addEventListener('change', () => {
         state.autoCalcCalories = els.autoCalcToggle.checked;
+        renderClientFields();
         renderDietTableRows();
         renderMobileCards();
         calculateAndRenderTotals();
@@ -1946,10 +1953,20 @@
   // -------------------------------------------------------------------------
   function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
+      let refreshingForServiceWorker = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshingForServiceWorker) return;
+        refreshingForServiceWorker = true;
+        window.location.reload();
+      });
+
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
           .then((registration) => {
             console.log('[PWA] Service Worker registered with scope:', registration.scope);
+            registration.update().catch((error) => {
+              console.warn('[PWA] Could not check for an app update:', error);
+            });
 
             registration.onupdatefound = () => {
               const installingWorker = registration.installing;
