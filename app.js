@@ -612,9 +612,9 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-          <label style="display:flex; align-items:center; gap:6px; font-weight:800; font-family:var(--font-display); font-size:1.1rem; color:var(--royal-blue);">
+          <label class="meal-calorie-field" style="display:flex; align-items:center; gap:6px; font-weight:800; font-family:var(--font-display); font-size:1.1rem; color:var(--royal-blue);">
             Calories
-            <input type="number" min="0" step="1" inputmode="numeric" class="macro-mini-input"
+            <input type="number" min="0" step="1" inputmode="numeric" class="macro-mini-input meal-calorie-input"
                    style="width:88px; font-weight:800; color:var(--royal-blue);" aria-label="Meal calories"
                    value="${row.calories !== '' && row.calories !== undefined ? row.calories : ''}" data-field="calories" data-index="${index}"
                    ${state.autoCalcCalories ? 'readonly title="Auto-calculated from 4P + 4C + 9F"' : ''} />

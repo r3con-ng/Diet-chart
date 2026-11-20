@@ -3,7 +3,7 @@
  * Offline Caching for 100% Offline Gym Floor Access
  */
 
-const CACHE_NAME = 'shapesquad-diet-cache-v7';
+const CACHE_NAME = 'shapesquad-diet-cache-v8';
 
 // Static resources to precache immediately on install
 const PRECACHE_ASSETS = [

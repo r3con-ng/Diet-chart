@@ -1000,6 +1000,13 @@ body {
   gap: 10px;
 }
 
+.table-controls-primary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .calc-toggle-wrap {
   display: flex;
   align-items: center;
@@ -1139,6 +1146,29 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 768px) {
   .table-responsive-wrapper { padding: 4px 10px; }
+  .table-bottom-controls {
+    align-items: stretch;
+    flex-direction: column;
+    margin: 8px 0 12px;
+    padding: 10px;
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-radius: var(--radius-sm);
+  }
+  .table-controls-primary {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .table-controls-primary > .btn { width: 100%; justify-content: center; }
+  .calc-toggle-wrap {
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.35;
+    font-size: 0.82rem;
+  }
+  .calc-toggle-wrap .switch { flex: 0 0 40px; margin-top: 1px; }
+  .table-controls-tip { font-size: 0.76rem; line-height: 1.35; }
   .diet-table-container { display: none; }
   .mobile-cards-view {
     display: flex;
@@ -1184,6 +1214,8 @@ input:checked + .slider:before { transform: translateX(18px); }
   .meal-card-macros-grid > div:nth-child(3) { grid-area: carbs; }
   .meal-card-macros-grid .macro-mini-label { display: block; margin-bottom: 2px; }
   .meal-card-macros-grid .macro-mini-input { width: 100%; min-width: 0; box-sizing: border-box; }
+  .meal-calorie-field { min-width: 0; font-size: 1rem !important; }
+  .meal-calorie-input { width: 88px; flex: 0 0 88px; }
 
   .macro-mini-label {
     font-size: 0.68rem;

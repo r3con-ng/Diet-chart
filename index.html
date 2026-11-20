@@ -212,6 +212,27 @@
           <!-- D. DIET TABLE & CARDS SECTION -->
           <section class="table-responsive-wrapper">
 
+            <div class="table-bottom-controls no-print">
+              <div class="table-controls-primary">
+                <button type="button" id="btnAddMealRow" class="btn btn-secondary" style="font-weight: 700;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Add Meal Row</span>
+                </button>
+
+                <div class="calc-toggle-wrap">
+                  <label class="switch" title="Auto-calculate calories using formula: 4*Protein + 4*Carbs + 9*Fats">
+                    <input type="checkbox" id="autoCalcToggle" checked />
+                    <span class="slider"></span>
+                  </label>
+                  <span>Auto-calculate calories (4P + 4C + 9F). Turn off to edit each meal’s calories.</span>
+                </div>
+              </div>
+              <div class="table-controls-tip">💡 Tip: Type in “Item Name” to autocomplete Indian fitness foods.</div>
+            </div>
+
             <!-- Desktop & Print Full Table View -->
             <div class="diet-table-container">
               <table class="diet-table" id="dietTable">
@@ -343,31 +364,6 @@
             <!-- Mobile Phone View: Macronutrient Breakdown (Synced under mobile cards) -->
             <div class="mobile-macro-breakdown-card" id="mobileMacroBreakdownContainer">
               <!-- Cloned / synced via JS on mobile -->
-            </div>
-
-            <!-- Table Bottom Controls (Add Meal, Calorie Toggle) -->
-            <div class="table-bottom-controls no-print">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <button type="button" id="btnAddMealRow" class="btn btn-secondary" style="font-weight: 700;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  <span>Add Meal Row</span>
-                </button>
-
-                <div class="calc-toggle-wrap">
-                  <label class="switch" title="Auto-calculate calories using formula: 4*Protein + 4*Carbs + 9*Fats">
-                    <input type="checkbox" id="autoCalcToggle" checked />
-                    <span class="slider"></span>
-                  </label>
-                  <span>Auto-calculate calories (4P + 4C + 9F); turn off to edit each meal</span>
-                </div>
-              </div>
-
-              <div style="font-size: 0.825rem; color: var(--text-muted);">
-                💡 Tip: Type in "Item Name" to autocomplete Indian fitness foods.
-              </div>
             </div>
 
           </section>
