@@ -168,7 +168,7 @@
     },
     mealRows: JSON.parse(JSON.stringify(DEFAULT_MEAL_ROWS)),
     instructionsText: DEFAULT_NOTES_TEXT,
-    autoCalcCalories: false,
+    autoCalcCalories: true,
     macroSplitMode: 'grams'
   };
 
@@ -197,7 +197,9 @@
           // Old saves held the "e.g. ..." sample text; start numbered notes instead
           state.instructionsText = /^\s*e\.g\./i.test(parsed.instructionsText) ? DEFAULT_NOTES_TEXT : parsed.instructionsText;
         }
-        if (typeof parsed.autoCalcCalories === 'boolean') {
+        // Before calorie mode v2, saved false values came from the old default
+        // (the checkbox looked enabled while application state was disabled).
+        if (parsed.calorieModeVersion >= 2 && typeof parsed.autoCalcCalories === 'boolean') {
           state.autoCalcCalories = parsed.autoCalcCalories;
         }
         if (parsed.macroSplitMode === 'grams' || parsed.macroSplitMode === 'calories') {
@@ -217,6 +219,7 @@
         mealRows: state.mealRows,
         instructionsText: state.instructionsText,
         autoCalcCalories: state.autoCalcCalories,
+        calorieModeVersion: 2,
         macroSplitMode: state.macroSplitMode
       }));
     } catch (e) {
@@ -609,9 +612,13 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-          <div style="font-weight:800; font-family:var(--font-display); font-size:1.1rem; color:var(--royal-blue);">
-            Calories: ${row.calories !== '' && row.calories !== undefined ? row.calories : '0'}
-          </div>
+          <label style="display:flex; align-items:center; gap:6px; font-weight:800; font-family:var(--font-display); font-size:1.1rem; color:var(--royal-blue);">
+            Calories
+            <input type="number" min="0" step="1" inputmode="numeric" class="macro-mini-input"
+                   style="width:88px; font-weight:800; color:var(--royal-blue);" aria-label="Meal calories"
+                   value="${row.calories !== '' && row.calories !== undefined ? row.calories : ''}" data-field="calories" data-index="${index}"
+                   ${state.autoCalcCalories ? 'readonly title="Auto-calculated from 4P + 4C + 9F"' : ''} />
+          </label>
           <div style="font-size:0.75rem; color:var(--text-muted);">
             Row ${index + 1} of ${state.mealRows.length}
           </div>
@@ -646,6 +653,12 @@
           const calInput = els.tableBody.querySelector(`input[data-field="calories"][data-index="${idx}"]`);
           if (calInput && calInput.value != row.calories) {
             calInput.value = row.calories;
+          }
+        }
+        if (els.mobileCardsContainer) {
+          const mobileCalInput = els.mobileCardsContainer.querySelector(`input[data-field="calories"][data-index="${idx}"]`);
+          if (mobileCalInput && mobileCalInput.value != row.calories) {
+            mobileCalInput.value = row.calories;
           }
         }
       }
@@ -1179,6 +1192,7 @@
       els.autoCalcToggle.addEventListener('change', () => {
         state.autoCalcCalories = els.autoCalcToggle.checked;
         renderDietTableRows();
+        renderMobileCards();
         calculateAndRenderTotals();
         saveStateToStorage();
         showToast(state.autoCalcCalories ? 'Auto-Calc Calories enabled (4P + 4C + 9F)' : 'Manual Calories entry enabled', 'info');
